@@ -101,7 +101,7 @@
 
   .topbar{
     display:flex; justify-content:space-between; align-items:flex-end;
-    margin-bottom:28px; flex-wrap:wrap; gap:16px;
+    margin-bottom:20px; flex-wrap:wrap; gap:16px;
   }
   .topbar h1{
     font-family:'Oswald',sans-serif; font-weight:600; font-size:26px;
@@ -109,9 +109,33 @@
   }
   .topbar .sub{ color:var(--text-dim); font-size:13px; margin-top:4px; }
   .topbar .sub .dot{ color:var(--teal); }
+  .topbar .sub .dot.stale{ color:var(--red); }
   .clock-block{ text-align:right; }
   .clock-block .time{ font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:500; letter-spacing:.03em; }
   .clock-block .date{ color:var(--text-dim); font-size:12px; margin-top:2px; }
+
+  /* ===== Error banner ===== */
+  .error-banner{
+    display:none;
+    background:rgba(228,87,46,.12);
+    border:1px solid var(--red);
+    color:var(--text);
+    border-radius:10px;
+    padding:14px 18px;
+    margin-bottom:20px;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    font-size:13px;
+  }
+  .error-banner.show{ display:flex; }
+  .error-banner .msg{ display:flex; align-items:center; gap:10px; }
+  .error-banner .msg strong{ color:var(--red); }
+  .retry-btn{
+    background:var(--red); color:#14181D; font-weight:600;
+    padding:8px 16px; border-radius:7px; font-size:12.5px; flex-shrink:0;
+  }
+  .retry-btn:hover{ opacity:.85; }
 
   /* ===== KPI strip ===== */
   .kpi-row{
@@ -131,7 +155,7 @@
   .kpi .label{ color:var(--text-dim); font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; font-weight:500; }
   .kpi .value{ font-family:'Oswald',sans-serif; font-size:32px; font-weight:600; margin-top:8px; }
   .kpi .value span{ font-size:16px; color:var(--text-dim); font-family:'Inter',sans-serif; font-weight:400; }
-  .kpi .delta{ font-size:12px; margin-top:6px; font-family:'IBM Plex Mono',monospace; }
+  .kpi .delta{ font-size:12px; margin-top:6px; font-family:'IBM Plex Mono',monospace; color:var(--text-faint); }
   .delta.up{ color:var(--teal); }
   .delta.down{ color:var(--red); }
   .kpi::after{
@@ -141,7 +165,7 @@
     opacity:.5;
   }
 
-  /* ===== Highway strip (signature element) ===== */
+  /* ===== Timeline strip (signature element) ===== */
   .highway-card{
     background:var(--panel);
     border:1px solid var(--line);
@@ -149,9 +173,9 @@
     padding:20px 24px 26px;
     margin-bottom:22px;
   }
-  .highway-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .highway-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
   .highway-head h2{ font-family:'Oswald',sans-serif; font-size:15px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--text); }
-  .highway-head .legend{ display:flex; gap:16px; font-size:11.5px; color:var(--text-dim); }
+  .highway-head .legend{ display:flex; gap:16px; font-size:11.5px; color:var(--text-dim); flex-wrap:wrap; }
   .legend-item{ display:flex; align-items:center; gap:6px; }
   .legend-dot{ width:8px; height:8px; border-radius:50%; }
 
@@ -171,6 +195,15 @@
     animation:dash-scroll 1.6s linear infinite;
   }
   @keyframes dash-scroll{ from{ background-position:0 0; } to{ background-position:-40px 0; } }
+  .now-line{
+    position:absolute; top:6px; bottom:6px; width:2px;
+    background:var(--amber); opacity:.55; border-radius:1px;
+  }
+  .now-line::after{
+    content:'SEKARANG'; position:absolute; top:-16px; left:50%; transform:translateX(-50%);
+    font-size:8.5px; letter-spacing:.05em; color:var(--amber); font-family:'IBM Plex Mono',monospace;
+    white-space:nowrap;
+  }
   .truck-pin{
     position:absolute; top:50%; transform:translate(-50%,-50%);
     width:26px; height:26px; border-radius:50%;
@@ -178,20 +211,25 @@
     font-size:13px;
     border:2px solid var(--asphalt);
     cursor:default;
-    transition:left 1s ease;
+    transition:left .8s ease;
   }
-  .truck-pin.status-ontime{ background:var(--teal); }
-  .truck-pin.status-delay{ background:var(--red); }
-  .truck-pin.status-idle{ background:var(--text-faint); }
+  .truck-pin.st-fixed{ background:var(--teal); }
+  .truck-pin.st-attention{ background:var(--amber); }
+  .truck-pin.st-cancel{ background:var(--red); }
+  .truck-pin.st-other{ background:var(--text-faint); }
   .truck-pin .tip{
     position:absolute; bottom:130%; left:50%; transform:translateX(-50%);
     background:var(--panel-2); border:1px solid var(--line);
     padding:6px 10px; border-radius:6px; white-space:nowrap;
     font-size:11px; opacity:0; pointer-events:none; transition:opacity .15s;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'IBM Plex Mono',monospace; z-index:5;
   }
   .truck-pin:hover .tip{ opacity:1; }
   .mile-labels{ display:flex; justify-content:space-between; margin-top:8px; font-size:10.5px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; }
+  .highway-empty{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:var(--text-faint); font-size:12.5px;
+  }
 
   /* ===== Content grid ===== */
   .content-grid{
@@ -221,27 +259,28 @@
   tbody tr{ transition:background .12s; }
   tbody tr:hover{ background:var(--panel-2); }
   .wb-id{ font-family:'IBM Plex Mono',monospace; color:var(--text-dim); font-size:12px; }
-  .route-cell{ display:flex; align-items:center; gap:6px; font-size:12.5px; }
-  .route-cell .arrow{ color:var(--text-faint); }
+  .cust-cell .name{ font-weight:500; }
+  .cust-cell .pic{ font-size:11px; color:var(--text-faint); margin-top:1px; }
+  .time-cell{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text-dim); }
+  .empty-row td{ text-align:center; padding:30px 10px; color:var(--text-faint); font-size:13px; }
 
   .badge{
     display:inline-flex; align-items:center; gap:5px;
     padding:4px 9px; border-radius:100px;
     font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; font-weight:600;
+    white-space:nowrap;
   }
   .badge::before{ content:''; width:6px; height:6px; border-radius:50%; }
-  .badge.ontime{ background:rgba(63,167,150,.13); color:var(--teal); }
-  .badge.ontime::before{ background:var(--teal); }
-  .badge.delay{ background:rgba(228,87,46,.13); color:var(--red); }
-  .badge.delay::before{ background:var(--red); }
-  .badge.loading{ background:rgba(242,169,0,.13); color:var(--amber); }
-  .badge.loading::before{ background:var(--amber); }
+  .badge.st-fixed{ background:rgba(63,167,150,.13); color:var(--teal); }
+  .badge.st-fixed::before{ background:var(--teal); }
+  .badge.st-cancel{ background:rgba(228,87,46,.13); color:var(--red); }
+  .badge.st-cancel::before{ background:var(--red); }
+  .badge.st-attention{ background:rgba(242,169,0,.13); color:var(--amber); }
+  .badge.st-attention::before{ background:var(--amber); }
+  .badge.st-other{ background:var(--panel-2); color:var(--text-dim); }
+  .badge.st-other::before{ background:var(--text-faint); }
 
-  .progress-bar{ width:70px; height:5px; background:var(--line); border-radius:3px; overflow:hidden; }
-  .progress-fill{ height:100%; background:var(--teal); border-radius:3px; }
-  .progress-fill.delay{ background:var(--red); }
-
-  /* Side column: alerts + drivers */
+  /* Side column: attention + PIC */
   .side-col{ display:flex; flex-direction:column; gap:18px; }
 
   .alert-item{
@@ -259,6 +298,7 @@
   .alert-icon.info{ background:rgba(63,167,150,.13); }
   .alert-body .title{ font-size:12.5px; font-weight:500; }
   .alert-body .meta{ font-size:11px; color:var(--text-faint); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .empty-note{ color:var(--text-faint); font-size:12.5px; padding:6px 0; }
 
   .driver-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); }
   .driver-row:last-child{ border-bottom:none; padding-bottom:0; }
@@ -271,21 +311,24 @@
     flex-shrink:0;
   }
   .driver-info{ flex:1; min-width:0; }
-  .driver-info .name{ font-size:12.5px; font-weight:500; }
-  .driver-info .truck{ font-size:11px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; }
-  .driver-status{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-  .driver-status.driving{ background:var(--teal); box-shadow:0 0 0 3px rgba(63,167,150,.15); }
-  .driver-status.resting{ background:var(--amber); box-shadow:0 0 0 3px rgba(242,169,0,.15); }
-  .driver-status.offline{ background:var(--text-faint); }
+  .driver-info .name{ font-size:12.5px; font-weight:500; text-transform:capitalize; }
+  .driver-info .truck{ font-size:11px; color:var(--text-faint); }
+  .driver-count-pill{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim);
+    background:var(--panel-2); padding:3px 9px; border-radius:100px; flex-shrink:0;
+  }
 
   .filter-row{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
   .filter-chip{
     padding:6px 13px; border-radius:100px; font-size:11.5px;
     background:var(--panel-2); color:var(--text-dim); border:1px solid var(--line);
-    transition:all .15s;
+    transition:all .15s; text-transform:capitalize;
   }
   .filter-chip.active{ background:var(--amber); color:#14181D; border-color:var(--amber); font-weight:600; }
   .filter-chip:hover:not(.active){ border-color:var(--text-faint); color:var(--text); }
+
+  .skeleton{ animation:pulse 1.4s ease-in-out infinite; background:var(--panel-2); border-radius:6px; }
+  @keyframes pulse{ 0%,100%{ opacity:.5; } 50%{ opacity:1; } }
 
   @media (max-width: 980px){
     .shell{ grid-template-columns:1fr; }
@@ -313,7 +356,7 @@
     <a class="nav-item" title="Armada">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
     </a>
-    <a class="nav-item" title="Pengemudi">
+    <a class="nav-item" title="PIC">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
     </a>
     <a class="nav-item" title="Laporan">
@@ -332,7 +375,7 @@
     <div class="topbar">
       <div>
         <h1>Command Deck</h1>
-        <div class="sub">Sedang memantau <span class="dot mono" id="fleet-count">24</span> unit di jalan &nbsp;·&nbsp; Terminal Cikarang</div>
+        <div class="sub"><span class="dot mono" id="status-dot">●</span> <span id="fleet-summary">Memuat data…</span></div>
       </div>
       <div class="clock-block">
         <div class="time mono" id="clock">00:00:00</div>
@@ -340,48 +383,52 @@
       </div>
     </div>
 
+    <div class="error-banner" id="errorBanner">
+      <div class="msg">⚠️ <span><strong>Gagal memuat data.</strong> <span id="errorDetail">Periksa koneksi atau URL API.</span></span></div>
+      <button class="retry-btn" id="retryBtn">Coba Lagi</button>
+    </div>
+
     <!-- KPI -->
-    <div class="kpi-row">
+    <div class="kpi-row" id="kpiRow">
       <div class="kpi">
-        <div class="label">Truk Aktif di Jalan</div>
-        <div class="value">24 <span>/ 30 unit</span></div>
-        <div class="delta up">▲ 3 dibanding kemarin</div>
+        <div class="label">Total Pengiriman</div>
+        <div class="value" id="kpi-total">–</div>
+        <div class="delta" id="kpi-total-sub">menunggu data</div>
       </div>
       <div class="kpi">
-        <div class="label">Tepat Waktu</div>
-        <div class="value">91.4<span>%</span></div>
-        <div class="delta up">▲ 2.1% minggu ini</div>
+        <div class="label">Status Fixed</div>
+        <div class="value" id="kpi-fixed">–</div>
+        <div class="delta" id="kpi-fixed-sub">menunggu data</div>
       </div>
       <div class="kpi">
-        <div class="label">Muatan Dalam Perjalanan</div>
-        <div class="value">Rp2.8<span>M</span></div>
-        <div class="delta up">▲ 8% dari target</div>
+        <div class="label">Customer Aktif</div>
+        <div class="value" id="kpi-customer">–</div>
+        <div class="delta" id="kpi-customer-sub">menunggu data</div>
       </div>
       <div class="kpi">
-        <div class="label">Insiden Terbuka</div>
-        <div class="value">3</div>
-        <div class="delta down">▼ perlu tindakan</div>
+        <div class="label">PIC Bertugas</div>
+        <div class="value" id="kpi-pic">–</div>
+        <div class="delta" id="kpi-pic-sub">menunggu data</div>
       </div>
     </div>
 
-    <!-- Highway signature panel -->
+    <!-- Timeline signature panel -->
     <div class="highway-card">
       <div class="highway-head">
-        <h2>Posisi Armada — Rute Cikarang → Surabaya</h2>
+        <h2>Jadwal Muat &amp; Bongkar (ETA / ETD)</h2>
         <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div> Tepat waktu</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Terlambat</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--text-faint)"></div> Berhenti</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div> Fixed</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div> Perlu perhatian</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Batal</div>
         </div>
       </div>
       <div class="highway" id="highway">
         <div class="road-lane"></div>
-        <!-- truck pins injected by JS -->
       </div>
-      <div class="mile-labels">
-        <span>CIKARANG (0 KM)</span>
-        <span>SEMARANG (450 KM)</span>
-        <span>SURABAYA (780 KM)</span>
+      <div class="mile-labels" id="mileLabels">
+        <span>–</span>
+        <span>–</span>
+        <span>–</span>
       </div>
     </div>
 
@@ -391,25 +438,26 @@
       <div class="card">
         <div class="card-head">
           <h2>Manifest Pengiriman</h2>
-          <span class="count" id="ship-count">18 pengiriman</span>
+          <span class="count" id="ship-count">– pengiriman</span>
         </div>
-        <div class="filter-row">
-          <button class="filter-chip active" data-filter="all">Semua</button>
-          <button class="filter-chip" data-filter="ontime">Tepat Waktu</button>
-          <button class="filter-chip" data-filter="delay">Terlambat</button>
-          <button class="filter-chip" data-filter="loading">Muat Barang</button>
+        <div class="filter-row" id="filterRow">
+          <button class="filter-chip active" data-filter="__all">Semua</button>
         </div>
         <table>
           <thead>
             <tr>
-              <th>No. Surat Jalan</th>
-              <th>Rute</th>
-              <th>Sopir</th>
-              <th>Progres</th>
+              <th>PIC</th>
+              <th>Customer</th>
+              <th>Jenis Armada</th>
+              <th>Muatan</th>
+              <th>ETA</th>
+              <th>ETD</th>
               <th>Status</th>
             </tr>
           </thead>
-          <tbody id="manifest-body"></tbody>
+          <tbody id="manifest-body">
+            <tr class="empty-row"><td colspan="7">Memuat data…</td></tr>
+          </tbody>
         </table>
       </div>
 
@@ -417,18 +465,18 @@
       <div class="side-col">
         <div class="card">
           <div class="card-head">
-            <h2>Peringatan</h2>
-            <span class="count">Live</span>
+            <h2>Perlu Perhatian</h2>
+            <span class="count" id="alert-count">–</span>
           </div>
-          <div id="alerts-list"></div>
+          <div id="alerts-list"><div class="empty-note">Memuat data…</div></div>
         </div>
 
         <div class="card">
           <div class="card-head">
-            <h2>Status Pengemudi</h2>
-            <span class="count" id="driver-count">12 aktif</span>
+            <h2>PIC Bertugas</h2>
+            <span class="count" id="driver-count">–</span>
           </div>
-          <div id="drivers-list"></div>
+          <div id="drivers-list"><div class="empty-note">Memuat data…</div></div>
         </div>
       </div>
     </div>
@@ -436,6 +484,14 @@
 </div>
 
 <script>
+  /* ===== Konfigurasi ===== */
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwqnH75ohgQmtH2k-YHkEsjHI_sRJmE7PFVDeuYEpkag8rbamYvVp_cJ49TCsoaVFcw/exec';
+  const REFRESH_MS = 30000; // polling tiap 30 detik
+
+  let currentData = [];
+  let currentFilter = '__all';
+  let lastGoodFetch = null;
+
   /* ===== Jam & tanggal live ===== */
   function updateClock(){
     const now = new Date();
@@ -445,126 +501,265 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  /* ===== Data mock ===== */
-  const drivers = ['Agus Setiawan','Budi Hartono','Candra Wijaya','Dedi Kurniawan','Eko Prasetyo','Fajar Nugroho','Gunawan Saputra','Hendra Kusuma'];
-  const routes = [
-    ['Cikarang','Semarang'],['Cikarang','Surabaya'],['Bekasi','Bandung'],['Cikarang','Yogyakarta'],
-    ['Cikarang','Malang'],['Karawang','Semarang'],['Cikarang','Solo'],['Bekasi','Surabaya']
-  ];
-  const statuses = ['ontime','ontime','ontime','delay','loading'];
+  /* ===== Util ===== */
+  function clean(v){ return (v || '').toString().trim(); }
 
-  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-  function padWB(n){ return 'WB-'+String(n).padStart(5,'0'); }
+  function classifyStatus(raw){
+    const s = clean(raw).toLowerCase();
+    if(['batal','cancel','cancelled','dibatalkan'].some(k => s.includes(k))) return 'st-cancel';
+    if(['fixed','confirmed','selesai','done','ok'].some(k => s.includes(k))) return 'st-fixed';
+    if(['pending','draft','proses','waiting','tentative','tbc','on progress','on hold'].some(k => s.includes(k))) return 'st-attention';
+    return 'st-other';
+  }
 
-  const shipments = Array.from({length:18}, (_,i) => {
-    const status = rand(statuses);
-    return {
-      id: padWB(48210+i),
-      route: rand(routes),
-      driver: rand(drivers),
-      progress: status === 'loading' ? 0 : Math.floor(Math.random()*80)+15,
-      status
-    };
-  });
+  function parseTimeToHours(t){
+    const s = clean(t);
+    const m = s.match(/^(\d{1,2})[:.](\d{2})/);
+    if(!m) return null;
+    return parseInt(m[1],10) + parseInt(m[2],10)/60;
+  }
 
-  const statusLabel = { ontime:'Tepat Waktu', delay:'Terlambat', loading:'Muat Barang' };
+  function initials(name){
+    const n = clean(name);
+    if(!n) return '?';
+    return n.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  }
 
-  function renderManifest(filter){
+  /* ===== Fetch ===== */
+  async function loadData(){
+    document.getElementById('retryBtn').textContent = 'Memuat…';
+    try{
+      const res = await fetch(API_URL, { cache:'no-store' });
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+      if(!json || json.success !== true || !Array.isArray(json.data)) throw new Error('Format respons tidak sesuai kontrak');
+
+      currentData = json.data;
+      lastGoodFetch = new Date();
+      hideError();
+      renderAll();
+    }catch(err){
+      showError(err.message || 'Terjadi kesalahan saat mengambil data');
+      // tetap render data terakhir yang berhasil (jika ada) supaya dashboard tidak kosong total
+      if(currentData.length){ renderAll(); }
+    }finally{
+      document.getElementById('retryBtn').textContent = 'Coba Lagi';
+    }
+  }
+
+  function showError(msg){
+    document.getElementById('errorDetail').textContent = msg;
+    document.getElementById('errorBanner').classList.add('show');
+    const dot = document.getElementById('status-dot');
+    dot.classList.add('stale');
+  }
+  function hideError(){
+    document.getElementById('errorBanner').classList.remove('show');
+    document.getElementById('status-dot').classList.remove('stale');
+  }
+
+  document.getElementById('retryBtn').addEventListener('click', loadData);
+
+  /* ===== Render orkestrator ===== */
+  function renderAll(){
+    const updatedStr = lastGoodFetch ? lastGoodFetch.toLocaleTimeString('id-ID',{hour12:false}) : '-';
+    document.getElementById('fleet-summary').textContent =
+      `${currentData.length} pengiriman tercatat · terakhir sinkron ${updatedStr}`;
+
+    renderKPI();
+    renderFilters();
+    renderManifest();
+    renderTimeline();
+    renderAttention();
+    renderPIC();
+  }
+
+  /* ===== KPI ===== */
+  function renderKPI(){
+    const total = currentData.length;
+    const fixedCount = currentData.filter(d => classifyStatus(d['Status']) === 'st-fixed').length;
+    const customers = new Set(currentData.map(d => clean(d['Customer']).toLowerCase()).filter(Boolean));
+    const pics = new Set(currentData.map(d => clean(d['Nama  PIC'] || d['Nama PIC']).toLowerCase()).filter(Boolean));
+
+    document.getElementById('kpi-total').textContent = total;
+    document.getElementById('kpi-total-sub').textContent = total ? 'tercatat di sistem' : 'belum ada data';
+
+    document.getElementById('kpi-fixed').innerHTML = `${fixedCount}<span> / ${total}</span>`;
+    document.getElementById('kpi-fixed-sub').textContent = total ? Math.round(fixedCount/total*100) + '% dari total' : '-';
+
+    document.getElementById('kpi-customer').textContent = customers.size;
+    document.getElementById('kpi-customer-sub').textContent = 'customer berbeda';
+
+    document.getElementById('kpi-pic').textContent = pics.size;
+    document.getElementById('kpi-pic-sub').textContent = 'PIC unik bertugas';
+  }
+
+  /* ===== Filter chips (dinamis dari data) ===== */
+  function renderFilters(){
+    const statuses = [...new Set(currentData.map(d => clean(d['Status'])).filter(Boolean))];
+    const row = document.getElementById('filterRow');
+    const chips = ['__all', ...statuses];
+    row.innerHTML = chips.map(s => `
+      <button class="filter-chip ${s === currentFilter ? 'active':''}" data-filter="${s}">${s === '__all' ? 'Semua' : s}</button>
+    `).join('');
+    row.querySelectorAll('.filter-chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        currentFilter = chip.dataset.filter;
+        row.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+        renderManifest();
+      });
+    });
+  }
+
+  /* ===== Manifest table ===== */
+  function renderManifest(){
     const body = document.getElementById('manifest-body');
-    const rows = shipments.filter(s => filter === 'all' || s.status === filter);
+    const rows = currentData.filter(d => currentFilter === '__all' || clean(d['Status']) === currentFilter);
     document.getElementById('ship-count').textContent = rows.length + ' pengiriman';
-    body.innerHTML = rows.map(s => `
+
+    if(!rows.length){
+      body.innerHTML = `<tr class="empty-row"><td colspan="7">Tidak ada data untuk filter ini.</td></tr>`;
+      return;
+    }
+
+    body.innerHTML = rows.map(d => {
+      const pic = clean(d['Nama  PIC'] || d['Nama PIC']);
+      const status = clean(d['Status']);
+      const cls = classifyStatus(status);
+      return `
       <tr>
-        <td class="wb-id">${s.id}</td>
-        <td>
-          <div class="route-cell">${s.route[0]} <span class="arrow">→</span> ${s.route[1]}</div>
-        </td>
-        <td>${s.driver}</td>
-        <td>
-          <div class="progress-bar"><div class="progress-fill ${s.status==='delay'?'delay':''}" style="width:${s.progress}%"></div></div>
-        </td>
-        <td><span class="badge ${s.status}">${statusLabel[s.status]}</span></td>
+        <td style="text-transform:capitalize">${pic || '-'}</td>
+        <td>${clean(d['Customer']) || '-'}</td>
+        <td style="text-transform:uppercase" class="mono">${clean(d['Jenis armada']) || '-'}</td>
+        <td>${clean(d['Muatan']) || '-'}</td>
+        <td class="time-cell">${clean(d['ETA']) || '-'}</td>
+        <td class="time-cell">${clean(d['ETD']) || '-'}</td>
+        <td><span class="badge ${cls}">${status || '-'}</span></td>
       </tr>
+    `;}).join('');
+  }
+
+  /* ===== Timeline (signature element) ===== */
+  function renderTimeline(){
+    const highway = document.getElementById('highway');
+    highway.querySelectorAll('.truck-pin, .now-line, .highway-empty').forEach(el=>el.remove());
+
+    const withTime = currentData
+      .map(d => ({ raw:d, eta:parseTimeToHours(d['ETA']) }))
+      .filter(x => x.eta !== null);
+
+    if(!withTime.length){
+      const empty = document.createElement('div');
+      empty.className = 'highway-empty';
+      empty.textContent = 'Belum ada jadwal ETA untuk ditampilkan.';
+      highway.appendChild(empty);
+      document.getElementById('mileLabels').innerHTML = '<span>-</span><span>-</span><span>-</span>';
+      return;
+    }
+
+    let minH = Math.min(...withTime.map(x=>x.eta), 6);
+    let maxH = Math.max(...withTime.map(x=>x.eta), 22);
+    minH = Math.floor(minH) - 0.5;
+    maxH = Math.ceil(maxH) + 0.5;
+    if(maxH - minH < 2){ maxH = minH + 2; }
+
+    const fmtHour = h => {
+      const hh = Math.floor(((h % 24) + 24) % 24);
+      return String(hh).padStart(2,'0') + ':00';
+    };
+    document.getElementById('mileLabels').innerHTML = `
+      <span>${fmtHour(minH)}</span>
+      <span>${fmtHour((minH+maxH)/2)}</span>
+      <span>${fmtHour(maxH)}</span>
+    `;
+
+    // garis waktu "sekarang"
+    const now = new Date();
+    const nowH = now.getHours() + now.getMinutes()/60;
+    if(nowH >= minH && nowH <= maxH){
+      const nowLine = document.createElement('div');
+      nowLine.className = 'now-line';
+      nowLine.style.left = ((nowH - minH) / (maxH - minH) * 100) + '%';
+      highway.appendChild(nowLine);
+    }
+
+    withTime.forEach(x => {
+      const pos = Math.min(97, Math.max(3, (x.eta - minH) / (maxH - minH) * 100));
+      const status = clean(x.raw['Status']);
+      const cls = classifyStatus(status);
+      const pin = document.createElement('div');
+      pin.className = `truck-pin ${cls}`;
+      pin.style.left = pos + '%';
+      const pic = clean(x.raw['Nama  PIC'] || x.raw['Nama PIC']);
+      const muatan = clean(x.raw['Muatan']);
+      pin.innerHTML = `🚛<div class="tip">${pic || 'PIC?'} · ${muatan || '-'} · ETA ${clean(x.raw['ETA'])||'-'} → ETD ${clean(x.raw['ETD'])||'-'}</div>`;
+      highway.appendChild(pin);
+    });
+  }
+
+  /* ===== Perlu perhatian ===== */
+  function renderAttention(){
+    const list = document.getElementById('alerts-list');
+    const flagged = currentData.filter(d => {
+      const cls = classifyStatus(d['Status']);
+      return cls === 'st-attention' || cls === 'st-cancel';
+    });
+    document.getElementById('alert-count').textContent = flagged.length + ' item';
+
+    if(!flagged.length){
+      list.innerHTML = '<div class="empty-note">Tidak ada item yang perlu perhatian saat ini.</div>';
+      return;
+    }
+
+    list.innerHTML = flagged.map(d => {
+      const cls = classifyStatus(d['Status']);
+      const icon = cls === 'st-cancel' ? 'crit' : 'warn';
+      const symbol = cls === 'st-cancel' ? '✕' : '⏱';
+      const cust = clean(d['Customer']) || 'Customer?';
+      const status = clean(d['Status']) || '-';
+      return `
+      <div class="alert-item">
+        <div class="alert-icon ${icon}">${symbol}</div>
+        <div class="alert-body">
+          <div class="title">${cust} — status "${status}"</div>
+          <div class="meta">ETA ${clean(d['ETA'])||'-'} · ${clean(d['Muatan'])||'-'}</div>
+        </div>
+      </div>
+    `;}).join('');
+  }
+
+  /* ===== PIC bertugas ===== */
+  function renderPIC(){
+    const list = document.getElementById('drivers-list');
+    const map = new Map();
+    currentData.forEach(d => {
+      const name = clean(d['Nama  PIC'] || d['Nama PIC']) || 'Tanpa PIC';
+      map.set(name, (map.get(name) || 0) + 1);
+    });
+    const entries = [...map.entries()].sort((a,b)=>b[1]-a[1]);
+    document.getElementById('driver-count').textContent = entries.length + ' PIC';
+
+    if(!entries.length){
+      list.innerHTML = '<div class="empty-note">Belum ada PIC tercatat.</div>';
+      return;
+    }
+
+    list.innerHTML = entries.map(([name, count]) => `
+      <div class="driver-row">
+        <div class="driver-avatar">${initials(name)}</div>
+        <div class="driver-info">
+          <div class="name">${name}</div>
+          <div class="truck">menangani ${count} pengiriman</div>
+        </div>
+        <div class="driver-count-pill">${count}</div>
+      </div>
     `).join('');
   }
-  renderManifest('all');
 
-  document.querySelectorAll('.filter-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      renderManifest(chip.dataset.filter);
-    });
-  });
-
-  /* ===== Highway pins ===== */
-  const highway = document.getElementById('highway');
-  const truckCount = 9;
-  const pins = Array.from({length: truckCount}, (_,i) => {
-    const statusPool = ['status-ontime','status-ontime','status-ontime','status-delay','status-idle'];
-    const status = rand(statusPool);
-    const pin = document.createElement('div');
-    pin.className = `truck-pin ${status}`;
-    let pos = Math.random()*88 + 3;
-    pin.style.left = pos + '%';
-    pin.innerHTML = `🚛<div class="tip">${padWB(48210+i)} · ${Math.round(pos*780/100)} km</div>`;
-    highway.appendChild(pin);
-    return { el: pin, pos, status };
-  });
-
-  function driftPins(){
-    pins.forEach(p => {
-      if(p.status === 'status-idle') return;
-      let delta = p.status === 'status-delay' ? (Math.random()*0.6) : (Math.random()*1.4 + 0.3);
-      p.pos = Math.min(95, p.pos + delta);
-      p.el.style.left = p.pos + '%';
-      const tip = p.el.querySelector('.tip');
-      if(tip) tip.textContent = tip.textContent.split('·')[0] + '· ' + Math.round(p.pos*780/100) + ' km';
-      if(p.pos >= 95) p.pos = 3;
-    });
-  }
-  setInterval(driftPins, 2200);
-
-  /* ===== Alerts ===== */
-  const alerts = [
-    { icon:'crit', symbol:'⚠', title:'Ban pecah — WB-48213 di Tol Cipali KM 92', meta:'2 menit lalu' },
-    { icon:'warn', symbol:'⏱', title:'WB-48217 tertahan di pos timbang Brebes', meta:'14 menit lalu' },
-    { icon:'info', symbol:'✓', title:'WB-48208 tiba di gudang Semarang', meta:'26 menit lalu' },
-    { icon:'warn', symbol:'⛽', title:'Sisa BBM rendah — B 9021 XZ', meta:'41 menit lalu' },
-    { icon:'info', symbol:'📦', title:'Muat ulang selesai — WB-48219', meta:'1 jam lalu' },
-  ];
-  document.getElementById('alerts-list').innerHTML = alerts.map(a => `
-    <div class="alert-item">
-      <div class="alert-icon ${a.icon}">${a.symbol}</div>
-      <div class="alert-body">
-        <div class="title">${a.title}</div>
-        <div class="meta">${a.meta}</div>
-      </div>
-    </div>
-  `).join('');
-
-  /* ===== Drivers ===== */
-  const driverStates = [
-    { name:'Agus Setiawan', truck:'B 9021 XZ', status:'driving' },
-    { name:'Budi Hartono', truck:'B 8871 KY', status:'driving' },
-    { name:'Candra Wijaya', truck:'B 7742 QP', status:'resting' },
-    { name:'Dedi Kurniawan', truck:'B 9013 LM', status:'driving' },
-    { name:'Eko Prasetyo', truck:'B 6650 RT', status:'offline' },
-    { name:'Fajar Nugroho', truck:'B 8820 WD', status:'driving' },
-  ];
-  const statusText = { driving:'Mengemudi', resting:'Istirahat', offline:'Nonaktif' };
-  function initials(name){ return name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase(); }
-  document.getElementById('drivers-list').innerHTML = driverStates.map(d => `
-    <div class="driver-row">
-      <div class="driver-avatar">${initials(d.name)}</div>
-      <div class="driver-info">
-        <div class="name">${d.name}</div>
-        <div class="truck">${d.truck}</div>
-      </div>
-      <div class="driver-status ${d.status}" title="${statusText[d.status]}"></div>
-    </div>
-  `).join('');
-  document.getElementById('driver-count').textContent = driverStates.filter(d=>d.status==='driving').length + ' aktif';
+  /* ===== Mulai ===== */
+  loadData();
+  setInterval(loadData, REFRESH_MS);
 </script>
 
 </body>
